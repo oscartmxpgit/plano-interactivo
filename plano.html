@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Plano Interactivo</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f0f0f0;
+      font-family: sans-serif;
+    }
+
+    svg {
+      width: 100%;
+      height: 100vh;
+      border: 2px solid #333;
+      transition: all 0.8s ease;  /* Añadido para animación suave */
+      background-color: #fff;
+    }
+
+    .habitacion {
+      cursor: pointer;
+      stroke: #333;
+      stroke-width: 2;
+    }
+
+    .habitacion:hover {
+      fill-opacity: 0.8;
+    }
+
+    .label {
+      pointer-events: none;
+      font-size: 14px;
+      fill: #333;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <svg id="plano" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+    <!-- Habitaciones -->
+    <rect id="sala" class="habitacion" x="10" y="10" width="300" height="200" fill="#d0e0ff" />
+    <text x="160" y="115" class="label" text-anchor="middle">Sala</text>
+
+    <rect id="cocina" class="habitacion" x="320" y="10" width="200" height="200" fill="#ffe0b2" />
+    <text x="420" y="115" class="label" text-anchor="middle">Cocina</text>
+
+    <rect id="dormitorio" class="habitacion" x="10" y="220" width="300" height="180" fill="#e1bee7" />
+    <text x="160" y="310" class="label" text-anchor="middle">Dormitorio</text>
+
+    <rect id="baño" class="habitacion" x="320" y="220" width="200" height="180" fill="#b2dfdb" />
+    <text x="420" y="310" class="label" text-anchor="middle">Baño</text>
+  </svg>
+
+  <script>
+    const habitaciones = ["sala", "cocina", "dormitorio", "baño"];
+    const svg = document.getElementById("plano");
+
+    // Función para enfocar una habitación
+    function enfocarHabitacion(id) {
+      const room = document.getElementById(id);
+      const bbox = room.getBBox();
+
+      const padding = 20;
+      const x = bbox.x - padding;
+      const y = bbox.y - padding;
+      const width = bbox.width + 2 * padding;
+      const height = bbox.height + 2 * padding;
+
+      svg.setAttribute("viewBox", `${x} ${y} ${width} ${height}`);
+    }
+
+    // Función para alejar (ver todo el plano)
+    function verPlanoCompleto() {
+      svg.setAttribute("viewBox", "0 0 800 600");
+    }
+
+    // Añadir eventos a las habitaciones
+    habitaciones.forEach(id => {
+      const room = document.getElementById(id);
+      room.addEventListener("click", () => {
+        enfocarHabitacion(id);
+      });
+    });
+
+    // Añadir evento para restaurar la vista completa con doble clic
+    document.getElementById("plano").addEventListener("dblclick", () => {
+      verPlanoCompleto();
+    });
+
+    // Opcional: hacer clic en el fondo para alejar también
+    svg.addEventListener("click", (e) => {
+      // Si se hace clic en el fondo (y no en una habitación)
+      if (e.target === svg) {
+        verPlanoCompleto();
+      }
+    });
+  </script>
+
+</body>
+</html>
