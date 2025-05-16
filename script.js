@@ -1,8 +1,3 @@
-const svg = document.getElementById("plano");
-const tooltip = document.getElementById("tooltip");
-const areaList = document.getElementById("areaList");
-const search = document.getElementById("search");
-
 let areas = [
   {
     "id": "vestibulo",
@@ -203,73 +198,73 @@ let areas = [
 ];
 
 
-const initialViewBox = "0 0 1000 600"; // ajusta según tamaño plano original
+const svg = document.getElementById("plano");
+const tooltip = document.getElementById("tooltip");
+const areaList = document.getElementById("areaList");
+const search = document.getElementById("search");
+const minimap = document.getElementById("minimap");
 
+const initialViewBox = "0 0 1000 600";
 svg.setAttribute("viewBox", initialViewBox);
 
 renderAreas();
 fillAreaList();
+renderMinimap();
+createResetButton();
 
+// ======================= RENDER PRINCIPAL ===========================
 function renderAreas() {
-  // Limpiar svg antes de dibujar (para reiniciar render)
   while (svg.firstChild) svg.removeChild(svg.firstChild);
 
   areas.forEach(area => {
-    // Ajustes de posición para reducir espacios salvo el caso de vestuarios y zona verde
     let offsetX = 0, offsetY = 0;
-    // Por ejemplo, si quieres compactar todas las áreas 10px menos a la derecha y abajo, salvo entre vestuarios y zona verde:
     if (!(area.id === "vestuarios" || area.tipo === "zona_verde")) {
       offsetX = -10;
       offsetY = -10;
     }
-    // Si quieres un ajuste más fino, dime.
 
-    const el = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    el.setAttribute("x", area.x + offsetX);
-    el.setAttribute("y", area.y + offsetY);
-    el.setAttribute("width", area.width);
-    el.setAttribute("height", area.height);
-    el.setAttribute("fill", area.color);
-    el.setAttribute("stroke", "#333");
-    el.setAttribute("stroke-width", "1");
-    el.classList.add("area");
-    el.dataset.id = area.id;
-    el.style.cursor = "pointer";
+    // Área
+    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.setAttribute("x", area.x + offsetX);
+    rect.setAttribute("y", area.y + offsetY);
+    rect.setAttribute("width", area.width);
+    rect.setAttribute("height", area.height);
+    rect.setAttribute("fill", area.color);
+    rect.setAttribute("stroke", "#333");
+    rect.setAttribute("stroke-width", "1");
+    rect.classList.add("area");
+    rect.dataset.id = area.id;
+    rect.style.cursor = "pointer";
+    svg.appendChild(rect);
 
-    el.addEventListener("mouseenter", () => {
-      tooltip.innerHTML = `<strong>${area.nombre}</strong><br>${area.descripcion}`;
-      tooltip.style.display = "block";
-    });
-
-    el.addEventListener("mousemove", (e) => {
-      tooltip.style.left = (e.pageX + 15) + "px";
-      tooltip.style.top = (e.pageY + 15) + "px";
-    });
-
-    el.addEventListener("mouseleave", () => {
-      tooltip.style.display = "none";
-    });
-
-    el.addEventListener("click", (e) => {
-      e.stopPropagation(); // para que no dispare click fuera
-      focusArea(area.id);
-    });
-
-    svg.appendChild(el);
-
-    // Añadir el texto con el nombre del área
+    // Texto
     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
     text.textContent = area.nombre;
-    text.setAttribute("x", area.x + offsetX + 5);  // un poco dentro a la izquierda
-    text.setAttribute("y", area.y + offsetY + 20); // un poco hacia abajo para que se lea bien
+    text.setAttribute("x", area.x + offsetX + 5);
+    text.setAttribute("y", area.y + offsetY + 20);
     text.setAttribute("font-size", "14");
     text.setAttribute("fill", "#000");
     text.setAttribute("font-family", "Arial, sans-serif");
     text.style.userSelect = "none";
     svg.appendChild(text);
 
-    // Añadir decoraciones con imágenes si existen
-    if (area.decoraciones && Array.isArray(area.decoraciones)) {
+    // Tooltips y click
+    rect.addEventListener("mouseenter", () => {
+      tooltip.innerHTML = `<strong>${area.nombre}</strong><br>${area.descripcion}`;
+      tooltip.style.display = "block";
+    });
+    rect.addEventListener("mousemove", e => {
+      tooltip.style.left = `${e.pageX + 15}px`;
+      tooltip.style.top = `${e.pageY + 15}px`;
+    });
+    rect.addEventListener("mouseleave", () => tooltip.style.display = "none");
+    rect.addEventListener("click", e => {
+      e.stopPropagation();
+      focusArea(area.id);
+    });
+
+    // Decoraciones (árboles)
+    if (Array.isArray(area.decoraciones)) {
       area.decoraciones.forEach(deco => {
         if (deco.tipo === "arbol" && deco.src) {
           const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
@@ -285,16 +280,128 @@ function renderAreas() {
   });
 
   createResetButton();
+  renderMinimap();
+}
+
+// ========================== LISTA ============================
+function fillAreaList() {
+  areaList.innerHTML = "";
+  areas.forEach(area => {
+    const li = document.createElement("li");
+    li.textContent = area.nombre;
+    li.style.cursor = "pointer";
+    li.addEventListener("click", () => focusArea(area.id));
+    areaList.appendChild(li);
+  });
+}
+
+// ========================== ZOOM Y NAVEGACIÓN ======================
+document.addEventListener("keydown", (e) => {
+  let [x, y, w, h] = svg.getAttribute("viewBox").split(" ").map(Number);
+  const step = 20;
+  if (e.key === "ArrowLeft") x -= step;
+  if (e.key === "ArrowRight") x += step;
+  if (e.key === "ArrowUp") y -= step;
+  if (e.key === "ArrowDown") y += step;
+  svg.setAttribute("viewBox", `${x} ${y} ${w} ${h}`);
+  renderMinimap();
+});
+
+svg.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  let [x, y, w, h] = svg.getAttribute("viewBox").split(" ").map(Number);
+  const zoomFactor = e.deltaY < 0 ? 0.9 : 1.1;
+  const cx = x + w / 2;
+  const cy = y + h / 2;
+  w *= zoomFactor;
+  h *= zoomFactor;
+  x = cx - w / 2;
+  y = cy - h / 2;
+  svg.setAttribute("viewBox", `${x} ${y} ${w} ${h}`);
+  renderMinimap();
+}, { passive: false });
+
+// ============================ BÚSQUEDA ===========================
+search.addEventListener("input", () => {
+  const value = search.value.toLowerCase();
+  const items = areaList.querySelectorAll("li");
+  items.forEach((item, index) => {
+    const match = areas[index].nombre.toLowerCase().includes(value);
+    item.style.display = match ? "block" : "none";
+  });
+});
+
+// ============================ FOCO Y RESET ===========================
+function focusArea(id) {
+  const area = areas.find(a => a.id === id);
+  if (!area) return;
+  const padding = 20;
+  svg.setAttribute("viewBox", `${area.x - padding} ${area.y - padding} ${area.width + 2 * padding} ${area.height + 2 * padding}`);
+  renderMinimap();
+}
+
+function resetView() {
+  svg.setAttribute("viewBox", initialViewBox);
+  renderMinimap();
+}
+
+svg.addEventListener("click", () => resetView());
+
+// ============================ MINIMAPA ============================
+function renderMinimap() {
+  // Limpiar contenido anterior
+  while (minimap.firstChild) {
+    minimap.removeChild(minimap.firstChild);
+  }
+
+  // Calcular límites (bounding box) de todas las áreas
+  const bounds = areas.reduce((acc, area) => {
+    acc.minX = Math.min(acc.minX, area.x);
+    acc.minY = Math.min(acc.minY, area.y);
+    acc.maxX = Math.max(acc.maxX, area.x + area.width);
+    acc.maxY = Math.max(acc.maxY, area.y + area.height);
+    return acc;
+  }, { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
+
+  const totalWidth = bounds.maxX - bounds.minX;
+  const totalHeight = bounds.maxY - bounds.minY;
+
+  // Ajustar viewBox automáticamente al contenido
+  minimap.setAttribute("viewBox", `${bounds.minX} ${bounds.minY} ${totalWidth} ${totalHeight}`);
+
+  // Dibujar cada área en el minimapa
+  areas.forEach(area => {
+    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.setAttribute("x", area.x);
+    rect.setAttribute("y", area.y);
+    rect.setAttribute("width", area.width);
+    rect.setAttribute("height", area.height);
+    rect.setAttribute("fill", area.color);
+    rect.setAttribute("stroke", "#333");
+    rect.setAttribute("stroke-width", "0.5");
+    minimap.appendChild(rect);
+  });
+
+  // Dibujar el rectángulo de vista actual en rojo
+  const mainViewBox = svg.getAttribute("viewBox").split(" ").map(Number);
+  const viewRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  viewRect.setAttribute("x", mainViewBox[0]);
+  viewRect.setAttribute("y", mainViewBox[1]);
+  viewRect.setAttribute("width", mainViewBox[2]);
+  viewRect.setAttribute("height", mainViewBox[3]);
+  viewRect.setAttribute("fill", "none");
+  viewRect.setAttribute("stroke", "red");
+  viewRect.setAttribute("stroke-width", "1");
+  minimap.appendChild(viewRect);
 }
 
 
+// ============================ BOTÓN RESET ============================
 function createResetButton() {
-  // Crear grupo SVG para botón
   const btnGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
   btnGroup.setAttribute("class", "reset-btn");
   btnGroup.style.cursor = "pointer";
 
-  // Fondo botón (rectángulo con esquinas redondeadas)
   const btnBg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   btnBg.setAttribute("x", 10);
   btnBg.setAttribute("y", 540);
@@ -307,14 +414,12 @@ function createResetButton() {
   btnBg.setAttribute("stroke-width", "2");
   btnGroup.appendChild(btnBg);
 
-  // Icono (un simple "home" / reset estilo)
   const icon = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  icon.setAttribute("d", "M15 35 L15 25 L25 25 L25 35 Z M10 35 L20 20 L30 35 Z"); // casa sencilla
+  icon.setAttribute("d", "M15 35 L15 25 L25 25 L25 35 Z M10 35 L20 20 L30 35 Z");
   icon.setAttribute("fill", "white");
   icon.setAttribute("transform", "translate(15,510) scale(1.5)");
   btnGroup.appendChild(icon);
 
-  // Texto
   const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
   text.setAttribute("x", 60);
   text.setAttribute("y", 570);
@@ -324,75 +429,6 @@ function createResetButton() {
   text.textContent = "Vista Inicial";
   btnGroup.appendChild(text);
 
-  btnGroup.addEventListener("click", () => {
-    resetView();
-  });
-
+  btnGroup.addEventListener("click", resetView);
   svg.appendChild(btnGroup);
 }
-
-function fillAreaList() {
-  areaList.innerHTML = "";
-  areas.forEach(area => {
-    const li = document.createElement("li");
-    li.textContent = area.nombre;
-    li.style.cursor = "pointer";
-    li.addEventListener("click", () => focusArea(area.id));
-    areaList.appendChild(li);
-  });
-}
-
-search.addEventListener("input", () => {
-  const value = search.value.toLowerCase();
-  const items = areaList.querySelectorAll("li");
-  items.forEach((item, index) => {
-    const match = areas[index].nombre.toLowerCase().includes(value);
-    item.style.display = match ? "block" : "none";
-  });
-});
-
-function focusArea(id) {
-  const area = areas.find(a => a.id === id);
-  if (!area) return;
-  const padding = 20;
-  const x = area.x - padding;
-  const y = area.y - padding;
-  const width = area.width + 2 * padding;
-  const height = area.height + 2 * padding;
-  svg.setAttribute("viewBox", `${x} ${y} ${width} ${height}`);
-}
-
-// Resetea a vista inicial
-function resetView() {
-  svg.setAttribute("viewBox", initialViewBox);
-}
-
-// Clic fuera de áreas: vuelve a vista inicial
-svg.addEventListener("click", () => {
-  resetView();
-});
-
-// Navegación con teclado
-document.addEventListener("keydown", (e) => {
-  let [x, y, w, h] = svg.getAttribute("viewBox").split(" ").map(Number);
-  const step = 20;
-  if (e.key === "ArrowLeft") x -= step;
-  if (e.key === "ArrowRight") x += step;
-  if (e.key === "ArrowUp") y -= step;
-  if (e.key === "ArrowDown") y += step;
-  svg.setAttribute("viewBox", `${x} ${y} ${w} ${h}`);
-});
-
-// Zoom con la rueda del ratón
-svg.addEventListener("wheel", (e) => {
-  e.preventDefault();
-  let [x, y, w, h] = svg.getAttribute("viewBox").split(" ").map(Number);
-  const zoom = e.deltaY < 0 ? 0.9 : 1.1;
-  const cx = x + w / 2;
-  const cy = y + h / 2;
-  w *= zoom;
-  h *= zoom;
-  x = cx - w / 2;
-  y = cy - h / 2;
-  svg.setAttribute("viewBox", `${x} ${y} ${w} ${h}`);
-}, { passive: false });
