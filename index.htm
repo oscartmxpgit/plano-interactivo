@@ -2,17 +2,24 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Plano Interactivo</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="sidebar">
     <input type="text" id="search" placeholder="Buscar área..." />
-    <ul id="area-list"></ul>
+    <ul id="areaList"></ul>
   </div>
-  <div id="tooltip" class="hidden"></div>
-  <svg id="plano" viewBox="0 0 1000 800"></svg>
-  <canvas id="minimap"></canvas>
+
+  <div id="minimap-container">
+    <svg id="minimap" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+
+  <div id="tooltip"></div>
+
+  <svg id="plano" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"></svg>
+
   <script src="script.js"></script>
 </body>
 </html>

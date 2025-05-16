@@ -1,57 +1,91 @@
-body {
+body, html {
   margin: 0;
-  display: flex;
+  padding: 0;
+  height: 100%;
   font-family: Arial, sans-serif;
-}
-
-#panel {
-  width: 250px;
-  background: #fafafa;
-  border-right: 1px solid #ccc;
-  padding: 10px;
-  overflow-y: auto;
-}
-
-#contenedor {
-  position: relative;
-  flex-grow: 1;
   overflow: hidden;
 }
 
-#plano {
-  width: 100%;
-  height: 100vh;
-  background: #fff;
-  cursor: grab;
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background: #f9f9f9;
+  border-right: 1px solid #ccc;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  z-index: 100;
 }
 
-.habitacion:hover {
-  stroke: #000;
-  stroke-width: 2px;
+#sidebar input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#areaList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: calc(100% - 50px);
+  overflow-y: auto;
+}
+
+#areaList li {
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+#areaList li:hover {
+  background-color: #d0eaff;
+}
+
+#minimap-container {
+  position: fixed;
+  bottom: 10px;
+  left: 270px;
+  width: 200px;
+  height: 150px;
+  border: 1px solid #ccc;
+  background: white;
+  z-index: 90;
+}
+
+#minimap {
+  width: 100%;
+  height: 100%;
+  background: #f0f0f0;
+  cursor: pointer;
 }
 
 #tooltip {
   position: absolute;
-  background: #fff;
-  border: 1px solid #333;
-  padding: 6px;
-  border-radius: 4px;
-  font-size: 13px;
-  box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
   pointer-events: none;
-  z-index: 10;
-}
-
-.oculto {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #ccc;
+  padding: 6px 8px;
+  font-size: 14px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   display: none;
+  max-width: 250px;
+  z-index: 200;
 }
 
-#minimapa {
+#plano {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
-  width: 150px;
-  height: 120px;
-  border: 1px solid #888;
-  background: #f9f9f9;
+  top: 0;
+  left: 250px;
+  width: calc(100% - 250px);
+  height: 100vh;
+  background-color: #fff;
+  border-left: 1px solid #ccc;
 }
+
