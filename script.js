@@ -432,3 +432,53 @@ function createResetButton() {
   btnGroup.addEventListener("click", resetView);
   svg.appendChild(btnGroup);
 }
+
+function enableRightClickDrag(svgElement, onMoveCallback) {
+  let isDragging = false;
+  let startX, startY;
+  let startViewBox;
+
+  svgElement.addEventListener("contextmenu", e => e.preventDefault()); // desactivar menú derecho
+
+  svgElement.addEventListener("mousedown", e => {
+    if (e.button !== 2) return; // solo botón derecho
+    e.preventDefault();
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    startViewBox = svgElement.getAttribute("viewBox").split(" ").map(Number);
+    svgElement.classList.add("dragging");
+  });
+
+  svgElement.addEventListener("mousemove", e => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+
+    const scaleX = startViewBox[2] / svgElement.clientWidth;
+    const scaleY = startViewBox[3] / svgElement.clientHeight;
+
+    const newX = startViewBox[0] - dx * scaleX;
+    const newY = startViewBox[1] - dy * scaleY;
+
+    svgElement.setAttribute("viewBox", `${newX} ${newY} ${startViewBox[2]} ${startViewBox[3]}`);
+
+    if (onMoveCallback) onMoveCallback(newX, newY);
+  });
+
+  svgElement.addEventListener("mouseup", () => {
+    isDragging = false;
+    svgElement.classList.remove("dragging");
+  });
+
+  svgElement.addEventListener("mouseleave", () => {
+    isDragging = false;
+    svgElement.classList.remove("dragging");
+  });
+}
+
+enableRightClickDrag(svg, () => {
+  renderMinimap(); // actualiza la vista roja en el minimapa
+});
+
+enableRightClickDrag(minimap);

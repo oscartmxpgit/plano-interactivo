@@ -65,6 +65,16 @@ body, html {
   cursor: pointer;
 }
 
+#map, #minimap {
+  cursor: default;
+}
+
+.dragging {
+  cursor: grabbing !important;
+  cursor: -webkit-grabbing !important;
+}
+
+
 #tooltip {
   position: absolute;
   pointer-events: none;
