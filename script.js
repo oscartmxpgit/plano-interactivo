@@ -1,47 +1,68 @@
-fetch('plano.json')
-  .then(res => res.json())
-  .then(data => renderPlano(data));
-
 const svg = document.getElementById("plano");
+const tooltip = document.getElementById("tooltip");
+const areaList = document.getElementById("area-list");
+let currentViewBox = { x: 0, y: 0, width: 1000, height: 800 };
 
-function renderPlano(areas) {
-  areas.forEach(area => {
-    // Crear la habitación
-    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    rect.setAttribute("id", area.id);
-    rect.setAttribute("class", "habitacion");
-    rect.setAttribute("x", area.x);
-    rect.setAttribute("y", area.y);
-    rect.setAttribute("width", area.width);
-    rect.setAttribute("height", area.height);
-    rect.setAttribute("fill", area.color || "#ddd");
-    svg.appendChild(rect);
+fetch("areas.json")
+  .then(res => res.json())
+  .then(areas => {
+    areas.forEach(area => {
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", area.x);
+      rect.setAttribute("y", area.y);
+      rect.setAttribute("width", area.width);
+      rect.setAttribute("height", area.height);
+      rect.setAttribute("fill", area.color);
+      rect.classList.add("habitacion");
+      rect.addEventListener("mousemove", e => {
+        tooltip.style.left = `${e.pageX + 10}px`;
+        tooltip.style.top = `${e.pageY + 10}px`;
+        tooltip.classList.remove("hidden");
+        tooltip.innerText = area.descripcion;
+      });
+      rect.addEventListener("mouseleave", () => tooltip.classList.add("hidden"));
+      rect.addEventListener("click", () => zoomTo(area));
+      svg.appendChild(rect);
 
-    // Etiqueta de texto
-    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.setAttribute("x", area.x + area.width / 2);
-    label.setAttribute("y", area.y + area.height / 2);
-    label.setAttribute("class", "label");
-    label.setAttribute("text-anchor", "middle");
-    label.setAttribute("dominant-baseline", "central");
-    label.textContent = area.nombre;
-    svg.appendChild(label);
-
-    // Evento click
-    rect.addEventListener("click", () => enfocar(area));
+      const li = document.createElement("li");
+      li.textContent = area.nombre;
+      li.onclick = () => zoomTo(area);
+      areaList.appendChild(li);
+    });
   });
 
-  // Dobleclic para vista general
-  svg.addEventListener("dblclick", () => {
-    svg.setAttribute("viewBox", "0 0 1000 800");
-  });
-}
-
-function enfocar(area) {
+function zoomTo(area) {
   const padding = 20;
   const x = area.x - padding;
   const y = area.y - padding;
-  const w = area.width + padding * 2;
-  const h = area.height + padding * 2;
-  svg.setAttribute("viewBox", `${x} ${y} ${w} ${h}`);
+  const width = area.width + padding * 2;
+  const height = area.height + padding * 2;
+  svg.setAttribute("viewBox", `${x} ${y} ${width} ${height}`);
 }
+
+document.getElementById("search").addEventListener("input", e => {
+  const value = e.target.value.toLowerCase();
+  [...areaList.children].forEach(li => {
+    li.style.display = li.textContent.toLowerCase().includes(value) ? "block" : "none";
+  });
+});
+
+svg.addEventListener("wheel", e => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? 1.1 : 0.9;
+  currentViewBox.width *= delta;
+  currentViewBox.height *= delta;
+  svg.setAttribute("viewBox", `${currentViewBox.x} ${currentViewBox.y} ${currentViewBox.width} ${currentViewBox.height}`);
+});
+
+// Navegación con flechas
+document.addEventListener("keydown", e => {
+  const move = 50;
+  if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+    if (e.key === "ArrowUp") currentViewBox.y -= move;
+    if (e.key === "ArrowDown") currentViewBox.y += move;
+    if (e.key === "ArrowLeft") currentViewBox.x -= move;
+    if (e.key === "ArrowRight") currentViewBox.x += move;
+    svg.setAttribute("viewBox", `${currentViewBox.x} ${currentViewBox.y} ${currentViewBox.width} ${currentViewBox.height}`);
+  }
+});
