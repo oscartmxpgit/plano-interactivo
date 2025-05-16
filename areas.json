@@ -1,0 +1,33 @@
+[
+  {
+    "id": "habitacion1",
+    "nombre": "Habitación 1",
+    "x": 50,
+    "y": 80,
+    "width": 80,
+    "height": 60,
+    "fill": "#e0f7fa",
+    "descripcion": "Habitación estándar con cama y baño privado."
+  },
+  {
+    "id": "cafeteria",
+    "nombre": "Cafetería",
+    "x": 400,
+    "y": 100,
+    "width": 120,
+    "height": 80,
+    "fill": "#fff9c4",
+    "descripcion": "Área común para desayunos y meriendas."
+  },
+  {
+    "id": "zonaVerde1",
+    "nombre": "Zona Verde",
+    "x": 600,
+    "y": 200,
+    "width": 150,
+    "height": 120,
+    "fill": "#c8e6c9",
+    "descripcion": "Parque con árboles y bancos.",
+    "esVerde": true
+  }
+]
