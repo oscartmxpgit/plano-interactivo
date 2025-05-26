@@ -30,7 +30,15 @@ let areas = [
     "width": 80,
     "height": 60,
     "color": "#e1f5fe",
-    "descripcion": "Habitación estándar"
+    "descripcion": "Habitación estándar",
+    "decoraciones": [
+      {
+        "tipo": "cama",
+        "src": "assets/bed.svg",
+        "x": 110,
+        "y": 250
+      }
+    ]
   },
   {
     "id": "habitacion_2",
@@ -41,7 +49,15 @@ let areas = [
     "width": 80,
     "height": 60,
     "color": "#e1f5fe",
-    "descripcion": "Habitación estándar"
+    "descripcion": "Habitación estándar",
+    "decoraciones": [
+      {
+        "tipo": "cama",
+        "src": "assets/bed.svg",
+        "x": 210,
+        "y": 250
+      }
+    ]
   },
   {
     "id": "habitacion_3",
@@ -52,7 +68,15 @@ let areas = [
     "width": 80,
     "height": 60,
     "color": "#e1f5fe",
-    "descripcion": "Habitación estándar"
+    "descripcion": "Habitación estándar",
+    "decoraciones": [
+      {
+        "tipo": "cama",
+        "src": "assets/bed.svg",
+        "x": 310,
+        "y": 250
+      }
+    ]
   },
   {
     "id": "habitacion_4",
@@ -63,7 +87,15 @@ let areas = [
     "width": 80,
     "height": 60,
     "color": "#e1f5fe",
-    "descripcion": "Habitación estándar"
+    "descripcion": "Habitación estándar",
+    "decoraciones": [
+      {
+        "tipo": "cama",
+        "src": "assets/bed.svg",
+        "x": 410,
+        "y": 250
+      }
+    ]
   },
   {
     "id": "habitacion_5",
@@ -74,7 +106,15 @@ let areas = [
     "width": 80,
     "height": 60,
     "color": "#e1f5fe",
-    "descripcion": "Habitación estándar"
+    "descripcion": "Habitación estándar",
+    "decoraciones": [
+      {
+        "tipo": "cama",
+        "src": "assets/bed.svg",
+        "x": 510,
+        "y": 250
+      }
+    ]
   },
   {
     "id": "habitacion_6",
@@ -85,8 +125,55 @@ let areas = [
     "width": 80,
     "height": 60,
     "color": "#e1f5fe",
-    "descripcion": "Habitación estándar"
+    "descripcion": "Habitación estándar",
+    "decoraciones": [
+      {
+        "tipo": "cama",
+        "src": "assets/bed.svg",
+        "x": 610,
+        "y": 250
+      }
+    ]
   },
+  {
+    "id": "cafeteria",
+    "nombre": "Cafetería",
+    "tipo": "cafeteria",
+    "x": 520,
+    "y": 100,
+    "width": 110,
+    "height": 80,
+    "color": "#ffe0b2",
+    "descripcion": "Zona de comidas y bebidas",
+    "decoraciones": [
+      {
+        "tipo": "mesa",
+        "src": "assets/table.svg",
+        "x": 560,
+        "y": 140
+      }
+    ]
+  },
+  {
+    "id": "recepcion",
+    "nombre": "Recepción",
+    "tipo": "recepcion",
+    "x": 280,
+    "y": 100,
+    "width": 100,
+    "height": 80,
+    "color": "#fff9c4",
+    "descripcion": "Área de atención al visitante",
+    "decoraciones": [
+      {
+        "tipo": "sofa",
+        "src": "assets/sofa.svg",
+        "x": 290,
+        "y": 120
+      },
+    ]
+  },
+  
   {
     "id": "capilla",
     "nombre": "Capilla",
@@ -99,17 +186,6 @@ let areas = [
     "descripcion": "Espacio espiritual"
   },
   {
-    "id": "cafeteria",
-    "nombre": "Cafetería",
-    "tipo": "cafeteria",
-    "x": 520,
-    "y": 100,
-    "width": 110,
-    "height": 80,
-    "color": "#ffe0b2",
-    "descripcion": "Zona de comidas y bebidas"
-  },
-  {
     "id": "zona_verde_1",
     "nombre": "Zona Verde",
     "tipo": "zona_verde",
@@ -118,7 +194,27 @@ let areas = [
     "width": 200,
     "height": 150,
     "color": "#c8e6c9",
-    "descripcion": "Jardín con árboles"
+    "descripcion": "Jardín con árboles",
+    "decoraciones": [
+    {
+      "tipo": "arbol",
+      "src": "assets/tree.svg",
+      "x": 730,
+      "y": 330
+    },
+    {
+      "tipo": "arbol",
+      "src": "assets/tree.svg",
+      "x": 780,
+      "y": 370
+    },
+    {
+      "tipo": "arbol",
+      "src": "assets/tree.svg",
+      "x": 850,
+      "y": 330
+    }
+  ]
   },
   {
     "id": "fisioterapia",
@@ -154,12 +250,23 @@ let areas = [
     "descripcion": "Atención médica básica"
   },
   {
+    "id": "sala_descanso",
+    "nombre": "Sala Descanso",
+    "tipo": "sala",
+    "x": 570,
+    "y": 320,
+    "width": 110,
+    "height": 70,
+    "color": "#ffcdd2",
+    "descripcion": "Sala de descanso y relajación"
+  },
+  {
     "id": "zona_verde_2",
     "nombre": "Zona Verde Norte",
     "tipo": "zona_verde",
-    "x": 50,
-    "y": 450,
-    "width": 300,
+    "x": 90,
+    "y": 400,
+    "width": 350,
     "height": 150,
     "color": "#c8e6c9",
     "descripcion": "Zona verde con bancos y árboles decorativos",
@@ -167,33 +274,22 @@ let areas = [
       {
         "tipo": "arbol",
         "src": "assets/tree.svg",
-        "x": 70,
+        "x": 110,
         "y": 470
       },
       {
         "tipo": "arbol",
         "src": "assets/tree.svg",
-        "x": 150,
+        "x": 190,
         "y": 500
       },
       {
         "tipo": "arbol",
         "src": "assets/tree.svg",
-        "x": 250,
+        "x": 290,
         "y": 470
       }
     ]
-  },
-  {
-    "id": "recepcion",
-    "nombre": "Recepción",
-    "tipo": "recepcion",
-    "x": 280,
-    "y": 100,
-    "width": 100,
-    "height": 80,
-    "color": "#fff9c4",
-    "descripcion": "Área de atención al visitante"
   },
   {
     "id": "peluqueria",
@@ -222,8 +318,8 @@ let areas = [
     "nombre": "Sala de Usos Múltiples",
     "tipo": "sala_usos_multiples",
     "x": 470,
-    "y": 400,
-    "width": 200,
+    "y": 410,
+    "width": 210,
     "height": 100,
     "color": "#ffe082",
     "descripcion": "Sala para talleres y actividades"
@@ -232,7 +328,7 @@ let areas = [
     "id": "recepcion_mercancias",
     "nombre": "Recepción de Mercancías",
     "tipo": "recepcion_mercancias",
-    "x": 700,
+    "x": 710,
     "y": 470,
     "width": 180,
     "height": 80,
@@ -310,7 +406,7 @@ function renderAreas() {
     // Decoraciones (árboles)
     if (Array.isArray(area.decoraciones)) {
       area.decoraciones.forEach(deco => {
-        if (deco.tipo === "arbol" && deco.src) {
+        if (deco.src) {
           const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
           img.setAttribute("href", deco.src);
           img.setAttribute("x", deco.x);

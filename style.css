@@ -98,3 +98,14 @@ body, html {
   background-color: #fff;
   border-left: 1px solid #ccc;
 }
+
+h1 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 2em;
+  color: #222;
+  background: #fff;
+  z-index: 10;
+  position: relative;
+}
